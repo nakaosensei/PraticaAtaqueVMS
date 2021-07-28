@@ -146,11 +146,11 @@ iptables -A OUTPUT -j ACCEPT
 
 # Configurações específicas do nó atacante
 ```
-kali@kali:~$ sudo ip route add 172.16.1.0/24 via 10.0.2.15
-kali@kali:~$ sudo ip route add 172.16.2.0/24 via 10.0.2.15
+kali@kali:~$ sudo ip route add 172.16.1.0/24 via 10.0.2.5
+kali@kali:~$ sudo ip route add 172.16.2.0/24 via 10.0.2.5
 ```
 
-# Configurações específicas do nó vulnerável (host2a)
+# Configurações específicas do nó vulnerável (host2b)
 Para tornarmos esse nó realmente vulnerável, iremos tomar algumas ações específicas que seguem.
 
 ## Senha óbvia para o usuário root
@@ -169,7 +169,7 @@ Além disso, permitiremos o acesso externo via ssh para o usuário root, para ta
 PermitRootLogin yes
 ```
 
-## COnfiguração de um banco de dados vulnerável
+## Configuração de um banco de dados vulnerável
 Primeiramente, vamos realizar o download do banco de dados POSTGRESQL
 ```
 sudo apt-get install postgresql postgresql-contrib
@@ -195,3 +195,35 @@ INSERT INTO CLIENTE VALUES('08765320087', 'pedro@gmail.com','rua das palmeiras 8
 INSERT INTO CLIENTE VALUES('08225590087', 'maria@gmail.com','rua das cascatas 238','42123-231222','maria');
 INSERT INTO CLIENTE VALUES('08225592227', 'mariana@gmail.com','rua das bananas 892','33322-231222','mariana');
 ```
+
+# Atividade 1 - Varredura de portas
+A primeira atividade proposta foi a varredura de portas, para tal foi usado o comando NMAP no atacante, a Figura 2 ilustra esse procedimento, no qual podemos observar as portas 21, 22, 23, 53, 80 e 5432 abertas.
+<p>
+  <img src="images/nmap.png" alt="Cenário proposto" style="width:100%">
+  <p align="center">Figura 2 - Varredura de portas</p>
+</p>
+<br>
+
+# Atividade 2 - Realizar ataques a 3 serviços usando a ferramenta Metasploit
+
+## auxioliary/scanner/ssh/ssh_login
+Para usar esse exploit, basta definir qual o alvo e o arquivo de tentativas de autenticação, a Figura 3 ilustra esse processo para as variáveis RHOSTS (endereço do alvo) e USERPASS_FILE(arquivo de tentativas de autenticação). Ao final da execução, a sessão foi capturada.
+<p>
+  <img src="images/ssh.png" alt="Cenário proposto" style="width:100%">
+  <p align="center">Figura 3 - Sessão ssh obtida com sucesso</p>
+</p>
+<br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

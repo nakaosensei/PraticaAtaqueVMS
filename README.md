@@ -196,7 +196,17 @@ INSERT INTO CLIENTE VALUES('08225590087', 'maria@gmail.com','rua das cascatas 23
 INSERT INTO CLIENTE VALUES('08225592227', 'mariana@gmail.com','rua das bananas 892','33322-231222','mariana');
 ```
 
-# Atividade 1 - Varredura de portas
+Agora, vamos  tornar a base acessível de forma externa, para isso acrescentamos ao final arquivo /etc/postgresql/10/main/pg_hba.conf
+```
+host    all             all              0.0.0.0/0                       trust
+host    all             all              ::/0                            trust
+```
+Por fim, bastou alterar a variável listen_addresses no arquivo /etc/postgresql/10/main/postgresql.conf para:
+```
+listen_addresses = '*'
+```
+
+# Atividade 1 - Varredura de portas:
 A primeira atividade proposta foi a varredura de portas, para tal foi usado o comando NMAP no atacante, a Figura 2 ilustra esse procedimento, no qual podemos observar as portas 21, 22, 23, 53, 80 e 5432 abertas.
 <p>
   <img src="images/nmap.png" alt="Cenário proposto" style="width:100%">
@@ -214,10 +224,28 @@ Para usar esse exploit, basta definir qual o alvo e o arquivo de tentativas de a
 </p>
 <br>
 
-
-
-
-
+##  auxiliary/admin/postgres/postgres_sql
+Para usar esse exploit, basta definir qual o alvo e o login do banco, adicionalmente pode-se definir uma tentativa de senha, a Figura 4 ilustra esse processo para as variáveis RHOSTS (endereço do alvo) e USERNAME(arquivo de tentativas de autenticação). As Figuras 5, 6 e 7 ilustram o procedimento a seguir para obter acesso a informações de uma tabela do banco de dados, partindo da listagem de bases, tabelas e queria select.
+<p>
+  <img src="images/postgres.png" alt="Cenário proposto" style="width:100%">
+  <p align="center">Figura 4 - Conexão bem sucedida com o postgres</p>
+</p>
+<br>
+<p>
+  <img src="images/databasename.png" alt="Cenário proposto" style="width:100%">
+  <p align="center">Figura 5 - Obtendo nomes das bases dados</p>
+</p>
+<br>
+<p>
+  <img src="images/databasetablename1.png" alt="Cenário proposto" style="width:100%">
+  <p align="center">Figura 6 - Obtendo tabelas das bases dados</p>
+</p>
+<br>
+<p>
+  <img src="images/databasetablename2.png" alt="Cenário proposto" style="width:100%">
+  <p align="center">Figura 7 - Obtendo informações sensitivas</p>
+</p>
+<br>
 
 
 

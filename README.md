@@ -9,9 +9,9 @@ Esse é um projeto para a realização de ataques em um ambiente virtualizado, o
 <br>
 
 # Configuração do cenário
-Todos os nós desse experimento usam a imagem do sistema operacional Ubuntu 18.04 (server), todos eles possuem um servidor http, ftp e telnet.
+O nó atacante do experimento utilia uma imagem do Kali Linux 2020, todos os demais usam a imagem do sistema operacional Ubuntu 18.04 (server), esses possuem um servidor http, ftp e telnet.
 
-Na instalação base de totdos os nós, foram executados os seguintes comandos:
+Na instalação base de todos os nós Ubuntu, foram executados os seguintes comandos:
 ```bash
 sudo apt install apache2
 sudo apt install openssh-server
@@ -23,6 +23,8 @@ sudo apt install proftpd
 sudo apt install telnetd
 ```
 
+Para o experimento foi criada uma Rede NAT, no software virtualbox isso é realizado em Arquivo->Preferências->Rede e criar Rede NAT.
+
 Nas máquinas da rede local (host1a e host1b), o nome associada a placa de rede é intnet1, nas máquinas da DMZ (host2a, host2b) o nome será intnet2, na placa de rede interna da WAN (host3a) estará conectada a uma Rede NAT, por fim, na VM do Firewall tem-se a primeira placa de rede interna na intnet1, a segunda na intnet2 e a terceira com a mesma Rede NAT do host3a. A tabela 1 apresenta as redes internas das VM's. 
 
 | VM        | Redes Internas | 
@@ -33,6 +35,8 @@ Nas máquinas da rede local (host1a e host1b), o nome associada a placa de rede 
 | host2b (vulnerable) | intnet2      |
 | host3a (WAN) | Rede NAT |
 | Firewall | intnet1, intnet2, Rede NAT |    
+| Atacante | Rede NAT | 
+
  <p align="center">Tabela 1 - Placas de rede </p>
 
  A seguir são apresentadas as configurações de rede de todos os nós do experimeto.
@@ -109,6 +113,9 @@ network:
     version: 2
 ```
 
+Pelo fato do atacante usar DHCP, nenhuma configuração adicional foi realizada.
+
+
 ## Ligando roteamento  no firewall
 Agora ligaremos ligaremos o modo de roteamento para o firewall, nessa configuração o Firewall é quem possui uma interface com acesso à Internet, e ele que de fato irá ceder aos nós da LAN e DMZ. Para isso, no firewall e no host3a abra o arquivo /etc/sysctl.conf, e acrescente a linha abaixo:
 ```bash
@@ -137,4 +144,54 @@ echo "Permitindo a passagem de trafego que sai do Firewall pelo firewall"
 iptables -A OUTPUT -j ACCEPT
 ```
 
+# Configurações específicas do nó atacante
+```
+kali@kali:~$ sudo ip route add 172.16.1.0/24 via 10.0.2.15
+kali@kali:~$ sudo ip route add 172.16.2.0/24 via 10.0.2.15
+```
+
 # Configurações específicas do nó vulnerável (host2a)
+Para tornarmos esse nó realmente vulnerável, iremos tomar algumas ações específicas que seguem.
+
+## Senha óbvia para o usuário root
+
+ começamos alterando a senha de root do sistema, através de:
+```
+root@nakao:~# passwd root
+Enter new UNIX password: root
+Retype new UNIX password: root
+passwd: password updated successfully
+```
+
+## Acesso SSH externo para root
+Além disso, permitiremos o acesso externo via ssh para o usuário root, para tal iremos alterar o arquivo /etc/ssh/sshd_config, acrescentando a seguinte linha:
+```
+PermitRootLogin yes
+```
+
+## COnfiguração de um banco de dados vulnerável
+Primeiramente, vamos realizar o download do banco de dados POSTGRESQL
+```
+sudo apt-get install postgresql postgresql-contrib
+```
+
+Agora, vamos mudar a senha do usuario padrao do banco da dados
+```
+sudo su postgres
+psql postgres postgres
+postgres=# \password postgres
+Enter new password: 123456 
+Enter it again: 123456
+```
+
+Finalmente, vamos criar uma base de dados e popular com algumas informações sensitivas.
+```
+CREATE DATABASE sistemavendas;
+GRANT ALL PRIVILEGES ON DATABASE sistemavendas TO postgres;
+\c sistemavendas;
+CREATE TABLE CLIENTE(cpf varchar(50),email varchar(100), endereco varchar(500), cardNumber varchar(100), nome varchar(100), PRIMARY KEY(cpf));
+INSERT INTO CLIENTE VALUES('08765590087', 'joao@gmail.com','rua das oliveiras 838','42123-23123','joao');
+INSERT INTO CLIENTE VALUES('08765320087', 'pedro@gmail.com','rua das palmeiras 838','42123-1123','pedro');
+INSERT INTO CLIENTE VALUES('08225590087', 'maria@gmail.com','rua das cascatas 238','42123-231222','maria');
+INSERT INTO CLIENTE VALUES('08225592227', 'mariana@gmail.com','rua das bananas 892','33322-231222','mariana');
+```

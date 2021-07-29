@@ -248,7 +248,25 @@ Para usar esse exploit, basta definir qual o alvo e o login do banco, adicionalm
 <br>
 
 
+## use auxiliary/scanner/http/dir_scanner
+Esse exploit escaneia os diretórios de um servidor web, a Figura 8 ilustra os passos executados, basicamente basta definir o endereço do alvo.
+<p>
+  <img src="images/apache.png" alt="Cenário proposto" style="width:100%">
+  <p align="center">Figura 8 - Obtendo informações de diretorios do servidor web</p>
+</p>
+<br>
 
+# Atividade 4 - Selecionar uma ferramenta do Kali e executar um ataque
+Para essa atividade foi utilizado o software Medusa, para realizar um ataque de força bruta para descobrir a senha de acesso de root da máquina vulnerável, foi usado um arquivo de senhas comuns pra tentar invadir o alvo e a execução foi bem sucedida, o terminal a esquerda da Figura 9 exibe o comando utilizado e o resultado indicando qual a senha de acesso, o arquivo aberto a direita mostra algumas senhas do arquivo utilizadas.
+
+<p>
+  <img src="images/medusa.png" alt="Cenário proposto" style="width:100%">
+  <p align="center">Figura 9 - Uso do software medusa para realizar ataque de acesso SSH por força bruta</p>
+</p>
+<br>
+
+# Conclusão
+Exploits são ferramentas úteis para avaliar a segurança de uma rede interna ou de um servidor, nesse experimento foram realizados ataques simples a uma máquina vulnerável, que foi totalmente violada. Por esse motivo, é essêncial definir boas políticas de Firewall, fazer uso de protocolos criptografados, não fazer uso de senhas fracas ou comuns para que o sistema não seja facilmente vítima de atacantes, o uso de aplicações como IDS's também é bem vinda para ajudar na segurança e estabilidade de uma rede. 
 
 
 
